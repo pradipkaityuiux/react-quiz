@@ -103,7 +103,7 @@ function App() {
   }
 
   function nextQuestion(){
-    dispatch({type: 'nextQuestion'})
+    dispatch({type: 'nextQuestion'});
   }
 
   function finishQuiz(){
@@ -133,7 +133,7 @@ function App() {
         {status=='active'&& 
           <>
             <Progress numQuestions={numQuestions} qIndex={index} totalPoints={points} maxPoint={maxPossiblePoints} answer={answer}/>
-            <Question question={questions[index]} answer={answer} dispatch={setAnswer} points={points}/>
+            <Question question={questions[index]} answer={answer} dispatch={setAnswer}/>
 
             <footer>
               <Timer timeRemaining={timeRemaining} updateTimer={updateTimer}/>
