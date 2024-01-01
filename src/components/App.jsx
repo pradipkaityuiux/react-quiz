@@ -8,6 +8,9 @@ import Question from "./Question";
 import Progress from "./Progress";
 import FinishScreen from "./FinishScreen";
 import Timer from "./Timer";
+import Counter from "./Counter";
+import { db } from "../firebase";
+import { collection, getDocs, doc, setDoc } from "firebase/firestore";
 
 let time_per_ques = 20; 
 const initialState = {
@@ -81,12 +84,95 @@ function App() {
   const numQuestions = questions.length;
   const maxPossiblePoints = questions.reduce((prev, curr) => prev+curr.points ,0)
 
+  const questionsAll = [
+    {
+      question: "In what situation do we use a callback to update state?",
+      options: [
+        "When updating the state will be slow",
+        "When the updated state is very data-intensive",
+        "When the state update should happen faster",
+        "When the new state depends on the previous state"
+      ],
+      correctOption: 3,
+      points: 30
+    },
+    {
+      question: "If we pass a function to useState, when will that function be called?",
+      options: [
+        "On each re-render",
+        "Each time we update the state",
+        "Only on the initial render",
+        "The first time we update the state"
+      ],
+      correctOption: 2,
+      points: 30
+    },
+    {
+      question: "Which hook to use for an API request on the component's initial render?",
+      options: ["useState", "useEffect", "useRef", "useReducer"],
+      correctOption: 1,
+      points: 10
+    },
+    {
+      question: "Which variables should go into the useEffect dependency array?",
+      options: [
+        "Usually none",
+        "All our state variables",
+        "All state and props referenced in the effect",
+        "All variables needed for clean up"
+      ],
+      correctOption: 2,
+      points: 30
+    },
+    {
+      question: "An effect will always run on the initial render.",
+      options: [
+        "True",
+        "It depends on the dependency array",
+        "False",
+        "In depends on the code in the effect"
+      ],
+      correctOption: 0,
+      points: 30
+    },
+    {
+      question: "When will an effect run if it doesn't have a dependency array?",
+      options: [
+        "Only when the component mounts",
+        "Only when the component unmounts",
+        "The first time the component re-renders",
+        "Each time the component is re-rendered"
+      ],
+      correctOption: 3,
+      points: 20
+    }
+  ]
+
   useEffect(function(){
     async function fetchQuestions(){
       try {
-        const res = await fetch('http://localhost:8000/questions');
-        const data = await res.json();
-        dispatch({ type: 'dataReceived', payload: data });
+        const questionArr = [];
+        const querySnapshot = await getDocs(collection(db, 'questions'));
+        querySnapshot.forEach((doc) => {
+          const eachQu = JSON.parse(JSON.stringify(doc.data()));
+          questionArr.push(eachQu);
+        });
+        dispatch({ type: 'dataReceived', payload: questionArr });
+
+
+        // for(let i=0; i<questionsAll.length; i++){
+        //   await setDoc(doc(db, "questions", `question${i+10}`), {
+        //     correctOption: questionsAll[i].correctOption,
+        //     options: questionsAll[i].options,
+        //     points: questionsAll[i].points,
+        //     question: questionsAll[i].question,
+        //   });
+        // }
+
+
+        // const res = await fetch('http://localhost:8000/questions');
+        // const data = await res.json();
+        // dispatch({ type: 'dataReceived', payload: data });
       } catch (error) {
         dispatch({type: 'dataFailed'})
       }
@@ -125,6 +211,7 @@ function App() {
   return (
     <div className="app">
       <Header />
+      {/* <Counter /> */}
 
       <Mainc>
         {status==='loading' && <Loader/>}
